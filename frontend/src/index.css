@@ -1,0 +1,60 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
+
+  html,
+  body,
+  #root {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    @apply bg-gray-50 text-gray-900 antialiased;
+  }
+}
+
+@layer utilities {
+  .scrollbar-thin {
+    scrollbar-width: thin;
+    scrollbar-color: #334155 transparent;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background-color: #334155;
+    border-radius: 3px;
+  }
+
+  /* 가격 상승/하락 플래시 애니메이션 */
+  @keyframes flash-up {
+    0% { background-color: rgb(240 253 244); }
+    100% { background-color: transparent; }
+  }
+
+  @keyframes flash-down {
+    0% { background-color: rgb(254 242 242); }
+    100% { background-color: transparent; }
+  }
+
+  .price-flash-up {
+    animation: flash-up 0.8s ease-out;
+  }
+
+  .price-flash-down {
+    animation: flash-down 0.8s ease-out;
+  }
+}

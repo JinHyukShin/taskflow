@@ -1,0 +1,11 @@
+package com.stockpulse.domain.watchlist.repository;
+
+import com.stockpulse.domain.watchlist.entity.Watchlist;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import java.util.List;
+
+public interface WatchlistRepository extends JpaRepository<Watchlist, Long> {
+
+    List<Watchlist> findByUserId(Long userId);
+}

@@ -1,0 +1,66 @@
+services:
+  app:
+    build:
+      context: ..
+      dockerfile: Dockerfile
+    container_name: stockpulse-app
+    ports:
+      - "${APP_PORT:-8080}:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      DB_USERNAME: ${DB_USERNAME:-stockpulse}
+      DB_PASSWORD: ${DB_PASSWORD:-stockpulse}
+      POSTGRES_DB: ${POSTGRES_DB:-stockpulse}
+      REDIS_HOST: redis
+      JWT_SECRET: ${JWT_SECRET:-default-dev-secret-must-be-at-least-32-characters-long}
+      COINGECKO_BASE_URL: ${COINGECKO_BASE_URL:-https://api.coingecko.com/api/v3}
+      YAHOO_BASE_URL: ${YAHOO_BASE_URL:-https://query1.finance.yahoo.com}
+    networks:
+      - stockpulse_network
+
+  postgres:
+    image: postgres:17-alpine
+    container_name: stockpulse-postgres
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-stockpulse}
+      POSTGRES_USER: ${DB_USERNAME:-stockpulse}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-stockpulse}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME:-stockpulse} -d ${POSTGRES_DB:-stockpulse}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - stockpulse_network
+
+  redis:
+    image: redis:7.4-alpine
+    container_name: stockpulse-redis
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - stockpulse_network
+
+volumes:
+  postgres_data:
+  redis_data:
+
+networks:
+  stockpulse_network:
+    driver: bridge
